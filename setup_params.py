@@ -130,7 +130,6 @@ class System:
 
         """
 
-        # There has got to be a better way to do this
         list_imports = ['import numpy as np', 'import radvel',
                         'import pandas as pd', 'import string', 'from matplotlib import rcParams']
         with open(setup_file, 'w') as file:
