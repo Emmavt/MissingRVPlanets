@@ -239,7 +239,7 @@ def eval_missing_planets(row):
     sys = System('TOI-1246', 5, star, [pl1, pl2, pl3, pl4, pl5])
 
     # Generate the setup file for the default system
-    sys.make_setup_file('TestData/T001246_4pl_data.csv', 'test_setup.py')
+    sys.make_setup_file(f'TestData/{sys.name}_st.csv', f"{sys.name}_default.py")
     # Run a Radvel fit on the default system setup file
     subprocess.run(["./radvel_bash.sh", f"{sys.name}_default.py", "nplanets"])
 
@@ -268,14 +268,14 @@ def eval_missing_planets(row):
             with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
                 pickle.dump(sys_add_pl, pickle_file)
             # Create Radvel setup file
-            setup_file_name = f'{sys_add_pl.name}.py'
+            setup_file_name = f'{sys.name}/{sys_add_pl.name}.py'
             sys_add_pl.make_setup_file('TestData/T001246_4pl_data.csv', setup_file_name)
             # Run radvel fit
             subprocess.run(["./radvel_bash.sh", setup_file_name, "nplanets"])
 
             # Read in results from radvel fit
             derived_params = pd.read_csv(
-                f'{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
+                f'{sys.name}/{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
             # Create dictionary mapping planet letters to numbers
             planet_letters = dict(zip([int(i) for i in np.arange(
                 sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
@@ -305,7 +305,7 @@ def eval_missing_planets(row):
         ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
         ax.set_xticks([3, 5, 10, 30, 50, 100])
         ax.legend(loc='upper left', fontsize=14)
-        plt.savefig(f"Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
+        plt.savefig(f"{sys.name}/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
 
         fig, ax = plt.subplots()
         colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
@@ -325,7 +325,7 @@ def eval_missing_planets(row):
         ax.set_xlim(-5, 45)
         ax.set_ylim(-0.05, 1.6)
         ax.legend()
-        plt.savefig(f"Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
+        plt.savefig(f"{sys.name}/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
 
 # Use multiprocessing to run several systems at once
 pool = Pool(processes=4)
