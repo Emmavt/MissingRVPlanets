@@ -205,7 +205,8 @@ class System:
 
 
 # Read in all systems' data
-data = pd.read_csv('planet_data.csv')
+data = pd.read_csv('planets_data.csv')
+row = data.iloc[0]
 
 
 def eval_missing_planets(row):
@@ -223,9 +224,10 @@ def eval_missing_planets(row):
     star = HostStar(row['ms'], row['mserr'], row['rs'], row['rserr'], row['teff'], row['tefferr'])
     num_planets = row['npl']
     planets = []
-    for i in range(num_planets):
-        # add masses and radii too
-        pl = Planet(string.ascii_lowercase[i], row[f'per{i}'], row[f't0{i}'], row[f'K{i}'])
+    for i in range(1, num_planets+1):
+        # Add planets
+        pl = Planet(string.ascii_lowercase[i], row[f'p{i}'], row[f't0{i}'],
+                    row[f'K{i}'], mass=row[f'mp{i}'], masserr=row[f'mperr{i}'], radius=row[f'rp{i}'], radiuserr=row[f'rperr{i}'], Perr=row[f'perr{i}'], t0err=row[f't0err{i}'], ecc=row[f'e{i}'], omega=row[f'w{i}'])
         planets.append(pl)
     sys = System(row['name'], num_planets, star, planets)
 
@@ -243,89 +245,95 @@ def eval_missing_planets(row):
     # Run a Radvel fit on the default system setup file
     subprocess.run(["./radvel_bash.sh", f"{sys.name}_default.py", "nplanets"])
 
-     # Calculate periods where additional planets may likely hide based on Kepler multi-planet statistics
-     periods_to_add = log_space_periods(sys)
-      # Dictionary to keep track of different system variations
-      sys_varieties = {'default': sys}
-       for key, P in periods_to_add.items():
-            t0s = np.array([pl.t0 for pl in sys.planets])
-            masses = np.array([pl.mass for pl in sys.planets])
-            # Pick a random t0 within the range set by the other planets in the system for the new planet
-            t0_add = np.random.uniform(t0s.min(), t0s.max())
-            # Use the mean of the other planets in the system as the initial mass of the additional planet (Millholland et al. 2017)
-            M_add = np.mean(masses)
-            # Calculate the associated semi-amplitude of the new planet
-            K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
-            planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add)
-            # Make a copy of the default system to add the new planet to
-            sys_add_pl = copy.deepcopy(sys)
-            sys_add_pl.name = sys.name+'_'+key  # Rename new system variation
-            sys_add_pl.planets += [planet_to_add]  # Add new planet
-            sys_add_pl.num_planets += 1
-            sys_varieties[key] = sys_add_pl  # Store new system variation
-            # Pickle system object to save it for reproducability
-            sys.__module__ = __name__  # Needed to pickle a dataclass
-            with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
-                pickle.dump(sys_add_pl, pickle_file)
-            # Create Radvel setup file
-            setup_file_name = f'{sys.name}/{sys_add_pl.name}.py'
-            sys_add_pl.make_setup_file('TestData/T001246_4pl_data.csv', setup_file_name)
-            # Run radvel fit
-            subprocess.run(["./radvel_bash.sh", setup_file_name, "nplanets"])
+    # Calculate periods where additional planets may likely hide based on Kepler multi-planet statistics
+    periods_to_add = log_space_periods(sys)
+    # Dictionary to keep track of different system variations
+    sys_varieties = {'default': sys}
+    for key, P in periods_to_add.items():
+        t0s = np.array([pl.t0 for pl in sys.planets])
+        masses = np.array([pl.mass for pl in sys.planets])
+        # Pick a random t0 within the range set by the other planets in the system for the new planet
+        t0_add = np.random.uniform(t0s.min(), t0s.max())
+        # Use the mean of the other planets in the system as the initial mass of the additional planet (Millholland et al. 2017)
+        M_add = np.mean(masses)
+        # Calculate the associated semi-amplitude of the new planet
+        K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
 
-            # Read in results from radvel fit
-            derived_params = pd.read_csv(
-                f'{sys.name}/{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
-            # Create dictionary mapping planet letters to numbers
-            planet_letters = dict(zip([int(i) for i in np.arange(
-                sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
-            # Calculate and update planet masses and associated errors from the fit
-            for i, planet in enumerate(sys_add_pl.planets):
-                planet.mass = np.mean(derived_params[f'mpsini{i+1}'])
-                planet.masserr = np.std(derived_params[f'mpsini{i+1}'])
+        planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add)
+        # Make a copy of the default system to add the new planet to
+        sys_add_pl = copy.deepcopy(sys)
+        sys_add_pl.name = sys.name+'_'+key  # Rename new system variation
+        sys_add_pl.planets += [planet_to_add]  # Add new planet
+        sys_add_pl.num_planets += 1
+        sys_varieties[key] = sys_add_pl  # Store new system variation
 
-        # Create a figure comparing the results from different system variations
-        fig, ax = plt.subplots()
-        colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
-        for key, system in sys_varieties.items():
-            c = next(colours)
-            for i, pl in enumerate(system.planets):
-                scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
-                                      label=key if i == 0 else "", ecolor='lightgray', ms=5)
-        ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=0, ymax=40, linestyle='--', alpha=0.5)
-        ax.set_xlabel('Orbital Period (d)', fontsize=16)
-        ax.set_ylabel('Planet Mass ($M_\oplus$)', fontsize=16)
-        ax.tick_params(axis='x', labelsize=16)
-        ax.tick_params(axis='y', labelsize=16)
-        ax.xaxis.set_tick_params(size=10)
-        ax.yaxis.set_tick_params(size=10)
-        ax.set_xscale('log')
-        ax.set_xlim(3, 100)
-        ax.set_ylim(-1, 35)
-        ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
-        ax.set_xticks([3, 5, 10, 30, 50, 100])
-        ax.legend(loc='upper left', fontsize=14)
-        plt.savefig(f"{sys.name}/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
+        # Pickle system object to save it for reproducability
+        sys.__module__ = __name__  # Needed to pickle a dataclass
+        with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
+            pickle.dump(sys_add_pl, pickle_file)
 
-        fig, ax = plt.subplots()
-        colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
-        for key, system in sys_varieties.items():
-            c = next(colours)
-            linestyles = ['-', '--', 'dotted', 'dashdot', (0, (5, 10)), (0, (3, 1, 1, 1, 1, 1))]
-            for i, pl in enumerate(system.planets):
-                x = np.linspace(pl.mass - 3*pl.masserr, pl.mass + 3*pl.masserr, 100)
-                y = stats.norm.pdf(x, pl.mass, pl.masserr)
-                ax.plot(x, y, c=c, ls=linestyles[i], label=key if i == 0 else "")
-                ax.plot(x, y, c=c, ls=linestyles[i], label=pl.letter if key == 'default' else "")
-        ax.set_xlabel('Planet Mass ($M_\oplus$)', fontsize=16)
-        ax.tick_params(axis='x', labelsize=16)
-        ax.tick_params(axis='y', labelsize=16)
-        ax.xaxis.set_tick_params(size=10)
-        ax.yaxis.set_tick_params(size=10)
-        ax.set_xlim(-5, 45)
-        ax.set_ylim(-0.05, 1.6)
-        ax.legend()
-        plt.savefig(f"{sys.name}/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
+        # Create Radvel setup file
+        setup_file_name = f'{sys.name}/{sys_add_pl.name}.py'
+        sys_add_pl.make_setup_file('TestData/T001246_4pl_data.csv', setup_file_name)
+        # Run radvel fit
+        subprocess.run(["./radvel_bash.sh", setup_file_name, "nplanets"])
+
+        # Read in results from radvel fit
+        derived_params = pd.read_csv(
+            f'{sys.name}/{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
+        # Create dictionary mapping planet letters to numbers
+        planet_letters = dict(zip([int(i) for i in np.arange(
+            sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
+        # Calculate and update planet masses and associated errors from the fit
+        for i, planet in enumerate(sys_add_pl.planets):
+            planet.mass = np.mean(derived_params[f'mpsini{i+1}'])
+            planet.masserr = np.std(derived_params[f'mpsini{i+1}'])
+
+    # Create a figure comparing the results from different system variations
+    fig, ax = plt.subplots()
+    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
+    for key, system in sys_varieties.items():
+        c = next(colours)
+        for i, pl in enumerate(system.planets):
+            scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
+                                  label=key if i == 0 else "", ecolor='lightgray', ms=5)
+    ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=0, ymax=40, linestyle='--', alpha=0.5)
+    ax.set_xlabel('Orbital Period (d)', fontsize=16)
+    ax.set_ylabel('Planet Mass ($M_\oplus$)', fontsize=16)
+    ax.tick_params(axis='x', labelsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+    ax.xaxis.set_tick_params(size=10)
+    ax.yaxis.set_tick_params(size=10)
+    ax.set_xscale('log')
+    ax.set_xlim(3, 100)
+    ax.set_ylim(-1, 35)
+    ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
+    ax.set_xticks([3, 5, 10, 30, 50, 100])
+    ax.legend(loc='upper left', fontsize=14)
+    plt.tight_layout()
+    plt.savefig(f"{sys.name}/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
+
+    fig, ax = plt.subplots()
+    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
+    for key, system in sys_varieties.items():
+        c = next(colours)
+        linestyles = ['-', '--', 'dotted', 'dashdot', (0, (5, 10)), (0, (3, 1, 1, 1, 1, 1))]
+        for i, pl in enumerate(system.planets):
+            x = np.linspace(pl.mass - 3*pl.masserr, pl.mass + 3*pl.masserr, 100)
+            y = stats.norm.pdf(x, pl.mass, pl.masserr)
+            ax.plot(x, y, c=c, ls=linestyles[i], label=key if i == 0 else "")
+            ax.plot(x, y, c=c, ls=linestyles[i], label=pl.letter if key == 'default' else "")
+    ax.set_xlabel('Planet Mass ($M_\oplus$)', fontsize=16)
+    ax.tick_params(axis='x', labelsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+    ax.xaxis.set_tick_params(size=10)
+    ax.yaxis.set_tick_params(size=10)
+    ax.set_xlim(-5, 45)
+    ax.set_ylim(-0.05, 1.6)
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(f"{sys.name}/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
+
 
 # Use multiprocessing to run several systems at once
 pool = Pool(processes=4)
