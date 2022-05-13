@@ -206,7 +206,6 @@ class System:
 
 # Read in all systems' data
 data = pd.read_csv('planets_data.csv')
-row = data.iloc[0]
 
 
 def eval_missing_planets(row):
@@ -268,7 +267,7 @@ def eval_missing_planets(row):
         sys_varieties[key] = sys_add_pl  # Store new system variation
 
         # Pickle system object to save it for reproducability
-        sys.__module__ = __name__  # Needed to pickle a dataclass
+        sys_add_pl.__module__ = __name__  # Needed to pickle a dataclass
         with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
             pickle.dump(sys_add_pl, pickle_file)
 
