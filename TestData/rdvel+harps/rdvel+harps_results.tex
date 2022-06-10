@@ -1,0 +1,528 @@
+\documentclass{emulateapj}
+\usepackage{graphicx,textcomp,fancyhdr,hyperref}
+\begin{document}
+\pagestyle{fancy}
+\pagenumbering{gobble}
+\chead{Summary of \texttt{RadVel} results for T001246 }
+
+% Model comparison table
+\begin{deluxetable*}{llrrrrrrr}
+\tablecaption{Model Comparison}
+\tablehead{\colhead{AICc Qualitative Comparison} & \colhead{Free Parameters} & \colhead{$N_{\rm free}$} & \colhead{$N_{\rm data}$} & \colhead{RMS} & \colhead{$\ln{\mathcal{L}}$} & \colhead{BIC} & \colhead{AICc} & \colhead{$\Delta$AICc}}
+\startdata
+
+  AICc Favored Model & $K_{b}$, $K_{c}$, $K_{d}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 12 & 127 & 3.54 & -331.12 & 738.92 & 707.53 & 0.00 \\
+
+  \hline \\
+
+  Somewhat Disfavored & $K_{b}$, $K_{c}$, $K_{d}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 11 & 127 & 3.60 & -333.46 & 738.76 & 709.77 & 2.24 \\
+
+  \hline \\
+
+  Strongly Disfavored & $K_{b}$, $K_{c}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 11 & 127 & 3.70 & -336.60 & 745.04 & 716.04 & 8.51 \\
+
+   & $K_{b}$, $K_{c}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 3.73 & -337.84 & 742.67 & 716.12 & 8.59 \\
+
+  \hline \\
+
+  Ruled Out & $K_{b}$, $K_{c}$, $K_{d}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.10 & -350.23 & 762.61 & 738.55 & 31.02 \\
+
+   & $K_{b}$, $K_{c}$, $K_{d}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 11 & 127 & 4.04 & -348.27 & 768.37 & 739.38 & 31.85 \\
+
+   & $K_{b}$, $K_{c}$, $K_{d}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.15 & -351.85 & 761.02 & 739.48 & 31.95 \\
+
+   & $K_{b}$, $K_{c}$, $K_{d}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.12 & -350.62 & 768.24 & 741.70 & 34.17 \\
+
+   & $K_{b}$, $K_{c}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.27 & -355.50 & 763.46 & 744.50 & 36.97 \\
+
+   & $K_{b}$, $K_{c}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.24 & -354.49 & 766.29 & 744.76 & 37.23 \\
+
+   & $K_{c}$, $K_{d}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 11 & 127 & 4.19 & -352.83 & 777.49 & 748.50 & 40.97 \\
+
+   & $K_{c}$, $K_{d}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.28 & -355.55 & 778.10 & 751.56 & 44.03 \\
+
+   & $K_{b}$, $K_{c}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.34 & -357.27 & 776.69 & 752.63 & 45.10 \\
+
+   & $K_{b}$, $K_{c}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.31 & -356.14 & 779.28 & 752.74 & 45.21 \\
+
+   & $K_{c}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.31 & -356.31 & 779.61 & 753.07 & 45.54 \\
+
+   & $K_{b}$, $K_{d}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 11 & 127 & 4.30 & -355.75 & 783.34 & 754.35 & 46.82 \\
+
+   & $K_{c}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.37 & -358.15 & 778.45 & 754.39 & 46.86 \\
+
+   & $K_{b}$, $K_{d}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.34 & -357.17 & 781.34 & 754.80 & 47.27 \\
+
+   & $K_{b}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.46 & -360.28 & 782.72 & 758.66 & 51.13 \\
+
+   & $K_{b}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.43 & -359.50 & 786.00 & 759.46 & 51.93 \\
+
+   & $K_{c}$, $K_{d}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.62 & -365.36 & 797.71 & 771.17 & 63.64 \\
+
+   & $K_{b}$, $K_{c}$, $K_{d}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.71 & -367.80 & 792.90 & 771.37 & 63.84 \\
+
+   & $K_{b}$, $K_{c}$, $K_{d}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.77 & -369.55 & 791.56 & 772.59 & 65.06 \\
+
+   & $K_{c}$, $K_{d}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.73 & -368.25 & 798.65 & 774.59 & 67.06 \\
+
+   & $K_{b}$, $K_{d}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.79 & -369.81 & 796.94 & 775.40 & 67.87 \\
+
+   & $K_{c}$, $K_{d}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.79 & -370.06 & 797.42 & 775.89 & 68.36 \\
+
+   & $K_{b}$, $K_{d}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.84 & -371.34 & 795.14 & 776.17 & 68.64 \\
+
+   & $K_{c}$, $K_{d}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.89 & -372.45 & 797.36 & 778.39 & 70.86 \\
+
+   & $K_{c}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.92 & -373.21 & 798.89 & 779.92 & 72.39 \\
+
+   & $K_{c}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.84 & -371.20 & 804.55 & 780.49 & 72.96 \\
+
+   & $K_{b}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 6 & 127 & 4.97 & -374.65 & 796.92 & 780.55 & 73.02 \\
+
+   & $K_{b}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.94 & -373.69 & 799.84 & 780.88 & 73.35 \\
+
+   & $K_{c}$, $K_{e}$, {$\sigma$}, {$\gamma$} & 6 & 127 & 4.98 & -374.99 & 797.61 & 781.24 & 73.71 \\
+
+   & $K_{b}$, $K_{d}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.82 & -370.53 & 808.06 & 781.51 & 73.98 \\
+
+   & $K_{c}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 4.90 & -372.88 & 803.06 & 781.53 & 74.00 \\
+
+   & $K_{b}$, $K_{c}$, {$\sigma$}, {$\gamma$} & 6 & 127 & 5.00 & -375.34 & 798.29 & 781.93 & 74.40 \\
+
+   & $K_{b}$, $K_{c}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 4.97 & -374.34 & 801.15 & 782.18 & 74.65 \\
+
+   & $K_{b}$, $K_{d}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.88 & -372.13 & 806.40 & 782.34 & 74.81 \\
+
+   & $K_{d}$, $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 10 & 127 & 4.84 & -371.32 & 809.63 & 783.08 & 75.55 \\
+
+   & $K_{d}$, $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.91 & -373.15 & 808.45 & 784.39 & 76.86 \\
+
+   & $K_{e}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 4.95 & -374.11 & 810.38 & 786.32 & 78.79 \\
+
+   & $K_{e}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 5.00 & -375.34 & 807.99 & 786.46 & 78.93 \\
+
+   & $K_{b}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 5.09 & -377.50 & 812.30 & 790.77 & 83.24 \\
+
+   & $K_{b}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 5.07 & -376.76 & 815.67 & 791.61 & 84.08 \\
+
+   & $K_{c}$, $K_{d}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 5.36 & -384.10 & 820.66 & 801.69 & 94.16 \\
+
+   & $K_{d}$, $K_{f}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 9 & 127 & 5.31 & -383.17 & 828.50 & 804.44 & 96.91 \\
+
+   & $K_{c}$, $K_{d}$, {$\sigma$}, {$\gamma$} & 6 & 127 & 5.47 & -386.75 & 821.11 & 804.75 & 97.22 \\
+
+   & $K_{d}$, $K_{e}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 5.42 & -385.77 & 824.01 & 805.04 & 97.51 \\
+
+   & $K_{b}$, $K_{d}$, $\dot{\gamma}$, {$\sigma$}, {$\gamma$} & 7 & 127 & 5.44 & -386.13 & 824.72 & 805.75 & 98.22 \\
+
+   & $K_{d}$, $K_{f}$, {$\sigma$}, {$\gamma$} & 8 & 127 & 5.41 & -385.35 & 828.01 & 806.48 & 98.95 \\
+
+\enddata
+\label{tab:comp}
+\end{deluxetable*}
+
+% Table of best fit parameters
+\begin{deluxetable}{lrrr}
+\tablecaption{ MCMC Posteriors }
+\tablehead{
+  \colhead{Parameter} & 
+  \colhead{Credible Interval} & 
+  \colhead{Maximum Likelihood} & 
+  \colhead{Units}
+}
+\startdata
+\sidehead{\bf{Modified MCMC Step Parameters}}
+
+  $P_{b}$ & $\equiv4.3074$ & $\equiv4.3074$ & days \\
+
+  $T\rm{conj}_{b}$ & $\equiv2458686.5648$ & $\equiv2458686.5648$ & JD \\
+
+  $T\rm{peri}_{b}$ & $\equiv2458685.488$ & $\equiv2458685.488$ & JD \\
+
+  $e_{b}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{b}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{b}$ & $3.32\pm 0.49$ & $3.3$ & m s$^{-1}$ \\
+
+  $P_{c}$ & $\equiv5.9032$ & $\equiv5.9032$ & days \\
+
+  $T\rm{conj}_{c}$ & $\equiv2458683.4746$ & $\equiv2458683.4746$ & JD \\
+
+  $T\rm{peri}_{c}$ & $\equiv2458681.9988$ & $\equiv2458681.9988$ & JD \\
+
+  $e_{c}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{c}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{c}$ & $3.52^{+0.48}_{-0.47}$ & $3.51$ & m s$^{-1}$ \\
+
+  $P_{d}$ & $\equiv18.6524$ & $\equiv18.6524$ & days \\
+
+  $T\rm{conj}_{d}$ & $\equiv2458688.9403$ & $\equiv2458688.9403$ & JD \\
+
+  $T\rm{peri}_{d}$ & $\equiv2458684.2772$ & $\equiv2458684.2772$ & JD \\
+
+  $e_{d}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{d}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{d}$ & $1.59^{+0.5}_{-0.48}$ & $1.6$ & m s$^{-1}$ \\
+
+  $P_{e}$ & $\equiv37.9198$ & $\equiv37.9198$ & days \\
+
+  $T\rm{conj}_{e}$ & $\equiv2458700.7204$ & $\equiv2458700.7204$ & JD \\
+
+  $T\rm{peri}_{e}$ & $\equiv2458691.2405$ & $\equiv2458691.2405$ & JD \\
+
+  $e_{e}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{e}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{e}$ & $2.91^{+0.5}_{-0.48}$ & $2.89$ & m s$^{-1}$ \\
+
+  $P_{f}$ & $76.41^{+0.77}_{-0.76}$ & $76.35$ & days \\
+
+  $T\rm{conj}_{f}$ & $2459383.6\pm 2.2$ & $2459383.5$ & JD \\
+
+  $T\rm{peri}_{f}$ & $2459364.5\pm 2.1$ & $2459364.4$ & JD \\
+
+  $e_{f}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{f}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{f}$ & $3.11^{+0.53}_{-0.52}$ & $3.22$ & m s$^{-1}$ \\
+
+\hline
+\sidehead{\bf{Orbital Parameters}}
+
+  $P_{b}$ & $\equiv4.3074$ & $\equiv4.3074$ & days \\
+
+  $T\rm{conj}_{b}$ & $\equiv2458686.5648$ & $\equiv2458686.5648$ & JD \\
+
+  $T\rm{peri}_{b}$ & $\equiv2458685.488$ & $\equiv2458685.488$ & JD \\
+
+  $e_{b}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{b}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{b}$ & $3.32\pm 0.49$ & $3.3$ & m s$^{-1}$ \\
+
+  $P_{c}$ & $\equiv5.9032$ & $\equiv5.9032$ & days \\
+
+  $T\rm{conj}_{c}$ & $\equiv2458683.4746$ & $\equiv2458683.4746$ & JD \\
+
+  $T\rm{peri}_{c}$ & $\equiv2458681.9988$ & $\equiv2458681.9988$ & JD \\
+
+  $e_{c}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{c}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{c}$ & $3.52^{+0.48}_{-0.47}$ & $3.51$ & m s$^{-1}$ \\
+
+  $P_{d}$ & $\equiv18.6524$ & $\equiv18.6524$ & days \\
+
+  $T\rm{conj}_{d}$ & $\equiv2458688.9403$ & $\equiv2458688.9403$ & JD \\
+
+  $T\rm{peri}_{d}$ & $\equiv2458684.2772$ & $\equiv2458684.2772$ & JD \\
+
+  $e_{d}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{d}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{d}$ & $1.59^{+0.5}_{-0.48}$ & $1.6$ & m s$^{-1}$ \\
+
+  $P_{e}$ & $\equiv37.9198$ & $\equiv37.9198$ & days \\
+
+  $T\rm{conj}_{e}$ & $\equiv2458700.7204$ & $\equiv2458700.7204$ & JD \\
+
+  $T\rm{peri}_{e}$ & $\equiv2458691.2405$ & $\equiv2458691.2405$ & JD \\
+
+  $e_{e}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{e}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{e}$ & $2.91^{+0.5}_{-0.48}$ & $2.89$ & m s$^{-1}$ \\
+
+  $P_{f}$ & $76.41^{+0.77}_{-0.76}$ & $76.35$ & days \\
+
+  $T\rm{conj}_{f}$ & $2459383.6\pm 2.2$ & $2459383.5$ & JD \\
+
+  $T\rm{peri}_{f}$ & $2459364.5\pm 2.1$ & $2459364.4$ & JD \\
+
+  $e_{f}$ & $\equiv0.0$ & $\equiv0.0$ &  \\
+
+  $\omega_{f}$ & $\equiv0.0$ & $\equiv0.0$ & radians \\
+
+  $K_{f}$ & $3.11^{+0.53}_{-0.52}$ & $3.22$ & m s$^{-1}$ \\
+
+\hline
+\sidehead{\bf{Other Parameters}}
+
+  $\gamma_{\rm j}$ & $0.18\pm 0.67$ & $0.18$ & m s$-1$ \\
+
+  $\gamma_{\rm harps-n}$ & $2.74^{+0.78}_{-0.79}$ & $2.71$ & m s$-1$ \\
+
+  $\dot{\gamma}$ & $-0.0038\pm 0.0018$ & $-0.0037$ & m s$^{-1}$ d$^{-1}$ \\
+
+  $\ddot{\gamma}$ & $\equiv0.0$ & $\equiv0.0$ & m s$^{-1}$ d$^{-2}$ \\
+
+  $\sigma_{\rm j}$ & $3.38^{+0.34}_{-0.3}$ & $3.19$ & $\rm m\ s^{-1}$ \\
+
+  $\sigma_{\rm harps-n}$ & $3.06^{+0.63}_{-0.52}$ & $2.75$ & $\rm m\ s^{-1}$ \\
+
+\enddata
+\tablenotetext{}{ 46000 links saved}
+\tablenotetext{}{
+  Reference epoch for $\gamma$,$\dot{\gamma}$,$\ddot{\gamma}$: 2458989.783463 
+}
+\label{tab:params}
+\end{deluxetable}
+
+% Table of derived parameters
+\begin{deluxetable}{lrrr}
+\tablecaption{ Derived Posteriors }
+\tablehead{
+  \colhead{Parameter} &
+  \colhead{Credible Interval} &
+  \colhead{Maximum Likelihood} &
+  \colhead{Units}
+}
+\startdata
+
+  $M_b\sin i$ & $7.7\pm 1.2$ & $8.3$ & M$_{\oplus}$ \\
+
+  $a_b$ & $0.04943^{+0.00093}_{-0.00097}$ & $0.05089$ &  AU \\
+
+  $M_c\sin i$ & $9.0\pm 1.3$ & $9.8$ & M$_{\oplus}$ \\
+
+  $a_c$ & $0.061\pm 0.0012$ & $0.0628$ &  AU \\
+
+  $M_d\sin i$ & $6.0^{+1.9}_{-1.8}$ & $5.3$ & M$_{\oplus}$ \\
+
+  $a_d$ & $0.1313^{+0.0025}_{-0.0026}$ & $0.1352$ &  AU \\
+
+  $M_e\sin i$ & $13.9^{+2.5}_{-2.3}$ & $15.7$ & M$_{\oplus}$ \\
+
+  $a_e$ & $0.2108^{+0.004}_{-0.0041}$ & $0.217$ &  AU \\
+
+  $M_f\sin i$ & $18.8^{+3.3}_{-3.2}$ & $18.9$ & M$_{\oplus}$ \\
+
+  $a_f$ & $0.3363^{+0.0067}_{-0.007}$ & $0.3461$ &  AU \\
+
+\enddata
+\end{deluxetable}
+
+% Summary of priors
+\begin{deluxetable}{l}
+\tablecaption{ Summary of Priors }
+\tablehead{}
+\startdata
+
+  $K$ constrained to be $>0$\\ \\
+
+  Gaussian prior on $P_{d}$: $18.652357 \pm 0.00665$ \\ \\
+
+  Gaussian prior on $P_{b}$: $4.307412 \pm 0.001355$ \\ \\
+
+  Gaussian prior on $P_{c}$: $5.903194 \pm 0.000474$ \\ \\
+
+  Gaussian prior on $P_{e}$: $37.919841 \pm 0.001333$ \\ \\
+
+  Bounded prior: $40 < P_{f} < 300$\\ \\
+
+  Bounded prior: $-20.0 < \sigma_{\rm j} < 20.0$\\ \\
+
+  Bounded prior: $-20.0 < \sigma_{\rm harps-n} < 20.0$\\ \\
+
+\enddata
+\end{deluxetable}
+
+% Table of Final Convergence Criterion
+\begin{deluxetable}{lrrr}
+\tablecaption{ Final Convergence Criterion }
+\tablehead{
+  \colhead{Criterion} &
+  \colhead{Final Value}
+}
+\startdata
+
+  minAfactor & $ 62.901$ \\
+
+  maxArchange & $  0.023$ \\
+
+  maxGR & $  1.003$ \\
+
+  minTz & $10415.477$ \\
+
+\enddata
+\end{deluxetable}
+
+% Table of RV data
+\begin{deluxetable}{lrrc}
+\tablecaption{ Radial Velocities }
+\tablehead{
+  \colhead{Time} & 
+  \colhead{RV} & 
+  \colhead{RV Unc.} & 
+  \colhead{Inst.} \\
+  \colhead{(JD)} & 
+  \colhead{(m s$^{-1}$)} & 
+  \colhead{(m s$^{-1}$)} & 
+  \colhead{}
+}
+\startdata
+
+  2458896.74755 & 4.58 & 2.12 & harps-n \\
+
+  2458897.75866 & 0.61 & 1.75 & harps-n \\
+
+  2458898.74416 & -0.37 & 1.67 & harps-n \\
+
+  2458904.73602 & 3.83 & 1.65 & harps-n \\
+
+  2458905.73390 & 10.47 & 1.51 & harps-n \\
+
+  2458925.71780 & 5.64 & 1.70 & harps-n \\
+
+  2458926.71870 & 9.68 & 1.32 & harps-n \\
+
+  2458929.70046 & 9.51 & 1.17 & harps-n \\
+
+  2459000.54607 & 11.88 & 1.40 & harps-n \\
+
+  2459000.63124 & 14.38 & 1.48 & harps-n \\
+
+  2459002.54860 & -0.38 & 1.08 & harps-n \\
+
+  2459002.63607 & -2.57 & 1.28 & harps-n \\
+
+  2459012.55197 & -0.95 & 1.37 & harps-n \\
+
+  2459012.64142 & -1.33 & 1.10 & harps-n \\
+
+  2459014.64077 & -9.39 & 1.44 & harps-n \\
+
+  2459087.39446 & -6.02 & 1.73 & harps-n \\
+
+  2459089.38672 & -3.96 & 2.59 & harps-n \\
+
+  2459248.76044 & 5.52 & 1.37 & harps-n \\
+
+  2459268.71880 & -7.49 & 2.45 & harps-n \\
+
+  2459309.60757 & 1.47 & 1.85 & harps-n \\
+
+  2459310.61642 & -2.39 & 2.29 & harps-n \\
+
+  2459353.69927 & 5.61 & 2.07 & harps-n \\
+
+  2459353.71693 & 3.84 & 1.98 & harps-n \\
+
+  2459370.54051 & 2.13 & 2.41 & harps-n \\
+
+  2459393.63808 & -11.84 & 1.33 & harps-n \\
+
+  2459394.53732 & -10.61 & 1.55 & harps-n \\
+
+  2459410.47261 & 4.92 & 2.14 & harps-n \\
+
+  2459450.43500 & 7.39 & 1.33 & harps-n \\
+
+  2458917.06227 & 4.32 & 1.78 & j \\
+
+  2458918.06580 & 8.52 & 1.66 & j \\
+
+  2458919.05511 & 0.10 & 1.53 & j \\
+
+  2458995.87585 & 5.54 & 1.93 & j \\
+
+  2458999.89268 & 15.33 & 1.72 & j \\
+
+  2459002.92823 & 2.95 & 1.60 & j \\
+
+  2459003.89134 & 0.30 & 1.56 & j \\
+
+  2459006.88414 & -4.17 & 1.60 & j \\
+
+  2459013.87325 & -3.55 & 1.66 & j \\
+
+  2459016.87492 & -4.46 & 1.82 & j \\
+
+  2459024.86927 & -2.41 & 1.57 & j \\
+
+  2459027.83837 & -3.46 & 1.39 & j \\
+
+  2459030.89287 & 2.69 & 1.63 & j \\
+
+  2459034.85573 & 5.75 & 1.59 & j \\
+
+  2459036.79199 & 4.47 & 1.46 & j \\
+
+  2459038.84046 & -0.08 & 1.57 & j \\
+
+  2459069.00985 & 4.96 & 2.56 & j \\
+
+  2459071.93664 & 5.47 & 1.77 & j \\
+
+  2459072.87996 & 6.98 & 1.75 & j \\
+
+  2459077.88344 & 11.11 & 1.67 & j \\
+
+  2459086.87479 & -9.45 & 2.27 & j \\
+
+  2459089.87543 & 0.28 & 1.61 & j \\
+
+\tablecomments{ Only the first 50 of 127 RVs are displayed in this table. \
+Use \texttt{radvel table -t rv} to save the full \LaTeX\ table as a separate file. }
+\enddata
+\end{deluxetable}
+
+% Multi-panel figure
+ 
+\begin{figure*}[!h]
+\centering 
+
+\includegraphics[height=8.0in,width=6.0in,keepaspectratio]{rdvel+harps_rv_multipanel.pdf}
+\caption{ Best-fit 5-planet Keplerian orbital model
+  for T001246. The maximum likelihood model is plotted while
+  the orbital parameters listed in Table \ref{tab:params} are the
+  median values of the posterior distributions.  The thin blue line is
+  the best fit 5-planet model. We add in quadrature
+  the RV jitter term(s) listed in Table \ref{tab:params} with the
+  measurement uncertainties for all RVs.  {\bf b)} Residuals to the
+  best fit 5-planet model. {\bf c)} RVs phase-folded
+  to the ephemeris of planet b. The Keplerian orbital models for all
+  other planets (if any) have been subtracted.  The small point colors
+  and symbols are the same as in panel {\bf a}.  Red circles (if
+  present) are the same velocities binned in 0.08 units of orbital
+  phase.  The phase-folded model for planet b is shown as the blue
+  line.}
+\end{figure*}
+ 
+
+% Corner plot
+ 
+\begin{figure*}[!h]
+\centering
+
+\includegraphics[height=8.0in,width=6.0in,keepaspectratio]{rdvel+harps_corner.pdf}
+\caption{Posterior distributions for all free parameters.}
+\end{figure*} 
+
+% Corner plot for derived parameters
+ 
+\begin{figure*}[!h]
+\centering
+
+\includegraphics[height=8.0in,width=6.0in,keepaspectratio]{rdvel+harps_corner_derived_pars.pdf}
+\caption{Posterior distributions for all derived parameters.}
+\end{figure*} 
+
+\lfoot{
+  \footnotesize{
+    Report produced by \texttt{RadVel} v1.4.7: 
+    \href{http://radvel.readthedocs.io}{http://radvel.readthedocs.io}
+  }
+}
+\end{document}
