@@ -5,7 +5,7 @@ import radvel
 from matplotlib import rcParams
 
 rcParams.update({'font.size': 16})
-
+#read in and organize columns
 hiresdata = pd.read_csv('T001246_4pl_data.csv')
 harpsdata = pd.read_csv('TOI-1246-tng_harpn-0028-srv-rvs-sais.dat',
                         delimiter='      ', header=None)
@@ -78,9 +78,9 @@ anybasis_params['jit_harps-n'] = radvel.Parameter(value=2.98, vary=True)
 params = anybasis_params.basis.to_any_basis(anybasis_params, fitting_basis)
 params['dvdt'].vary = True
 params['curv'].vary = False
-
+# radvel.RVModel outputs optimzed parameters?
 mod = radvel.RVModel(params, time_base=time_base)
-
+#define whether parameters can be varied in the fit or held fixed
 mod.params['per1'].vary = False
 mod.params['tc1'].vary = False
 mod.params['secosw1'].vary = False
@@ -105,9 +105,9 @@ mod.params['dvdt'].vary = True
 mod.params['curv'].vary = False
 mod.params['jit_j'].vary = True
 mod.params['jit_harps-n'].vary = True
-
+#priors are limitations that we define
 priors = [radvel.prior.PositiveKPrior(nplanets), radvel.prior.Gaussian('per3', 18.652357, 0.00665), radvel.prior.Gaussian('per1', 4.307412,  0.001355), radvel.prior.Gaussian(
     'per2', 5.903194,  0.000474),  radvel.prior.Gaussian('per4',  37.919841, 0.001333), radvel.prior.HardBounds('per5', 40, 300), radvel.prior.HardBounds('jit_j', -20.0, 20.0), radvel.prior.HardBounds('jit_harps-n', -20.0, 20.0)]
 
-
+#some info about the star
 stellar = dict(mstar=0.8683, mstar_err=0.05)
