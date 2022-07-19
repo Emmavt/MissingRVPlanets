@@ -31,7 +31,7 @@ def log_space_periods(sys):
         # Check we are not accidentally rerunning this command
         assert 'add' not in first_pl.letter and 'add' not in second_pl.letter, "You've gone too far and are finding additional planets in-between additional planets. Time to reset."
         # Save intermediate period to dictionary
-        intermediate_periods[f'add_{first_pl.letter}{second_pl.letter}'] = np.round(
+        intermediate_periods['add_{}{}'.format(first_pl.letter,second_pl.letter)] = np.round(
             intermediate_p, 3)
     return intermediate_periods
 

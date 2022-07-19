@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 import matplotlib.ticker as plticker
 import scipy.stats as stats
-%matplotlib inline
+#%matplotlib inline
 
 
 class HostStar(object):
@@ -48,7 +48,7 @@ class HostStar(object):
             str : Host star mass and radius
         """
 
-        return f'(Star: {self.mass} Msun, {self.radius} Rsun)'
+        return "(Star: {} Msun, {} Rsun)".format(self.mass, self.radius)
 
 
 class Planet(object):
@@ -57,7 +57,7 @@ class Planet(object):
 
     """
 
-    def __init__(self, letter, P, t0, K, ecc=0, omega=0, Perr=0, t0err=0, mass=0, masserr=0, radius=0, radiuserr=0):
+    def __init__(self, letter, P, t0, K, ecc, omega=0, Perr=0, t0err=0, mass=0, masserr=0, radius=0, radiuserr=0):
         """
         Initialize Planet object
 
@@ -97,7 +97,7 @@ class Planet(object):
         Returns:
             str : Planet letter, mass, and radius
         """
-        return f'(Planet {self.letter}: {self.mass} Me, {self.radius} Re)'
+        return '(Planet {}: {} Me, {} Re)'.format(self.letter, self.mass, self.radius)
 
 
 @dataclass(init=True)  # init=True generates standardized __init__ method
@@ -137,12 +137,11 @@ class System:
             for imp in list_imports:
                 file.write(imp+'\n')
             # Read in RV data, errors, time stamps, and telescope names into different arrays
-            file.write(f"\ndata = pd.read_csv('{data_file}')\n\n")
+            file.write("\ndata = pd.read_csv('{}')\n\n".format(data_file))
             file.write("t = np.array(data.time)\nvel = np.array(data.mnvel)\nerrvel = np.array(data.errvel)\ntel = np.array(data.tel)\ntelgrps = data.groupby('tel').groups\ninstnames = telgrps.keys()\n\n")
 
             # Define system parameters including name, number of planets, and what basis we want to fit the data in
-            file.write(
-                f"starname = '{self.name}'\nnplanets = {self.num_planets}\n fitting_basis = 'per tc secosw sesinw k'\nbjd0 = 0.\n")
+            file.write(f"starname = '{self.name}'\nnplanets = {self.num_planets}\nfitting_basis = 'per tc secosw sesinw k'\nbjd0 = 0.\n")
 
             # Generate a dictionary that maps the planet letter to a number as per Radvel formatting
             planet_letters = [pl.letter for pl in self.planets]
@@ -159,7 +158,7 @@ class System:
                 file.write(f"params['per{i}'] = radvel.Parameter(value = {planet.period})\n")
                 file.write(f"params['tc{i}'] = radvel.Parameter(value = {planet.t0})\n")
                 # For simplicity, and motivated by Yee et al. 2021, set eccentricities to 0
-                file.write(f"params['e{i}'] = radvel.Parameter(value = {planet.ecc}, vary=False)\n")
+                file.write(f"params['e{i}'] = radvel.Parameter(value = {planet.ecc}, vary=True)\n")
                 file.write(f"params['w{i}'] = radvel.Parameter(value = {planet.omega})\n")
                 file.write(f"params['k{i}'] = radvel.Parameter(value = {planet.K})\n\n")
 
@@ -219,15 +218,15 @@ def eval_missing_planets(row):
 
     """
     # Create system object with host star and planets for the 'default' scenario
-    star = HostStar(row['ms'], row['mserr'], row['rs'], row['rserr'], row['teff'], row['tefferr'])
-    num_planets = row['npl']
-    planets = []
-    for i in range(1, num_planets+1):
+    #star = HostStar(row['ms'], row['mserr'], row['rs'], row['rserr'], row['teff'], row['tefferr'])
+    #num_planets = row['npl']
+    #planets = []
+    #for i in range(1, num_planets+1):
         # Add planets
-        pl = Planet(string.ascii_lowercase[i], row[f'p{i}'], row[f't0{i}'],
-                    row[f'K{i}'], mass=row[f'mp{i}'], masserr=row[f'mperr{i}'], radius=row[f'rp{i}'], radiuserr=row[f'rperr{i}'], Perr=row[f'perr{i}'], t0err=row[f't0err{i}'], ecc=row[f'e{i}'], omega=row[f'w{i}'])
-        planets.append(pl)
-    sys = System(row['name'], num_planets, star, planets)
+        #pl = Planet(string.ascii_lowercase[i], row[f'p{i}'], row[f't0{i}'],
+                    #row[f'K{i}'], mass=row[f'mp{i}'], masserr=row[f'mperr{i}'], radius=row[f'rp{i}'], radiuserr=row[f'rperr{i}'], Perr=row[f'perr{i}'], t0err=row[f't0err{i}'], ecc=row[f'e{i}'], omega=row[f'w{i}'])
+        #planets.append(pl)
+    #sys = System(row['name'], num_planets, star, planets)
 
     # Create system object with host star and planets for the 'default' scenario
     star = HostStar(0.86, 0.12, 0.87, 0.1, 5151, 100)
@@ -239,9 +238,10 @@ def eval_missing_planets(row):
     sys = System('TOI-1246', 5, star, [pl1, pl2, pl3, pl4, pl5])
 
     # Generate the setup file for the default system
+    ##changed setup file to TestData/
     sys.make_setup_file(f'TestData/{sys.name}_st.csv', f"{sys.name}_default.py")
     # Run a Radvel fit on the default system setup file
-    subprocess.run(["./radvel_bash.sh", f"{sys.name}_default.py", "nplanets"])
+    subprocess.run(["TestData/radvel_bash.sh", f"{sys.name}_default.py", "nplanets"])
 
     # Calculate periods where additional planets may likely hide based on Kepler multi-planet statistics
     periods_to_add = log_space_periods(sys)
@@ -256,8 +256,10 @@ def eval_missing_planets(row):
         M_add = np.mean(masses)
         # Calculate the associated semi-amplitude of the new planet
         K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
-
-        planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add)
+#add
+        #ecc_add = pick random between 0 and 1? start with 0?
+        ecc_add = 0
+        planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add, ecc = ecc_add)
         # Make a copy of the default system to add the new planet to
         sys_add_pl = copy.deepcopy(sys)
         sys_add_pl.name = sys.name+'_'+key  # Rename new system variation
@@ -271,14 +273,14 @@ def eval_missing_planets(row):
             pickle.dump(sys_add_pl, pickle_file)
 
         # Create Radvel setup file
-        setup_file_name = f'{sys.name}/{sys_add_pl.name}.py'
-        sys_add_pl.make_setup_file('TestData/T001246_4pl_data.csv', setup_file_name)
+        setup_file_name = f'{sys.name}_default/{sys_add_pl.name}.py' 
+        sys_add_pl.make_setup_file('TestData/TOI-1246_st.csv', setup_file_name)
         # Run radvel fit
-        subprocess.run(["./radvel_bash.sh", setup_file_name, "nplanets"])
+        subprocess.run(["TestData/radvel_bash.sh", setup_file_name, "nplanets"])
 
         # Read in results from radvel fit
         derived_params = pd.read_csv(
-            f'{sys.name}/{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
+            f'{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
         # Create dictionary mapping planet letters to numbers
         planet_letters = dict(zip([int(i) for i in np.arange(
             sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
@@ -309,7 +311,7 @@ def eval_missing_planets(row):
     ax.set_xticks([3, 5, 10, 30, 50, 100])
     ax.legend(loc='upper left', fontsize=14)
     plt.tight_layout()
-    plt.savefig(f"{sys.name}/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
+    plt.savefig(f"{sys.name}_default/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
 
     fig, ax = plt.subplots()
     colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
@@ -330,10 +332,20 @@ def eval_missing_planets(row):
     ax.set_ylim(-0.05, 1.6)
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f"{sys.name}/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
-
+    plt.savefig(f"{sys.name}_default/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
+#plotting mass difference
+    fig, ax = plt.subplots()
+    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
+    for key, system in sys_varieties.items():
+        c = next(colours)
+        for i, pl in enumerate(system.planets):
+            scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
+                                  label=key if i == 0 else "", ecolor='lightgray', ms=5)
+    
+    
+eval_missing_planets(1)
 
 # Use multiprocessing to run several systems at once
-pool = Pool(processes=4)
-pool.map(eval_missing_planets, data)
-del pool
+#pool = Pool(processes=4)
+#pool.map(eval_missing_planets, data)
+#del pool
