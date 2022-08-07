@@ -119,7 +119,8 @@ class System:
         # For this science case, we only want to consider systems with 2+ planets
         assert self.num_planets >= 2, "Make sure you have at least 2 planets!"
         assert len(self.planets) == self.num_planets, "Make sure you've added all of the planets!"
-
+        
+    
     def make_setup_file(self, data_file, setup_file):
         """
         This function generates a setup file that can be read into and used by the Radvel package to perform an RV fit
@@ -129,7 +130,25 @@ class System:
             setup_file (str): Name to save the setup file under
 
         """
-
+        def ecc_helper(self):
+            pers = []
+            for i, planet in enumerate(self.planets):
+                pers.append(planet.period)
+            pers1 = sorted(pers)
+            eccs = []
+            for i in range(len(pers1)-1):
+                rat = (pers1[i+1]/pers1[i])**(2/3)
+                if rat > 2:
+                    eccs.append(0.99)
+                else:
+                    eccs.append(rat-1)
+            eccs.append(0.98)
+            eccs1 = []
+            for i in pers:
+                a = pers1.index(i)
+                eccs1.append(eccs[a])
+            num = len(eccs)
+            return [num,eccs1]
         list_imports = ['import numpy as np', 'import radvel',
                         'import pandas as pd', 'import string', 'from matplotlib import rcParams']
         with open(setup_file, 'w') as file:
@@ -181,8 +200,8 @@ class System:
                 i += 1
                 file.write(f"mod.params['per{i}'].vary = False\n")
                 file.write(f"mod.params['tc{i}'].vary = False\n")
-                file.write(f"mod.params['secosw{i}'].vary = False\n")
-                file.write(f"mod.params['sesinw{i}'].vary = False\n\n")
+                file.write(f"mod.params['secosw{i}'].vary = True\n")
+                file.write(f"mod.params['sesinw{i}'].vary = True\n\n")
 
             # The same for the global RV parameters
             file.write("mod.params['dvdt'].vary = True\nmod.params['curv'].vary = False\n\n")
@@ -195,6 +214,7 @@ class System:
                 if planet.perioderr != 0 and planet.t0err != 0:
                     file.write(
                         f"priors += [radvel.prior.Gaussian('per{i}', {planet.period}, {planet.perioderr})]\npriors += [radvel.prior.Gaussian('tc{i}', {planet.t0}, {planet.t0err})]\n")
+            file.write(f"priors += [radvel.prior.EccentricityPrior({ecc_helper(self)[0]}, upperlims={ecc_helper(self)[1]})]\n")
             # Set a hard bound prior on instrumental parameters to speed up the fit
             file.write(f"for telescope in telescopes:\n")
             file.write("\tpriors += [radvel.prior.HardBounds(f'jit_{telescope}', -20.0, 20.0)]\n\n")
@@ -258,7 +278,11 @@ def eval_missing_planets(row):
         K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
 #add
         #ecc_add = pick random between 0 and 1? start with 0?
-        ecc_add = 0
+        def ecc():
+            eccs = np.random.rayleigh(0.0355, 1)
+            while eccs != 0:
+                return eccs[0]
+        ecc_add = ecc()
         planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add, ecc = ecc_add)
         # Make a copy of the default system to add the new planet to
         sys_add_pl = copy.deepcopy(sys)

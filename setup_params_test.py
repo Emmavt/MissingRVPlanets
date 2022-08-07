@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 import matplotlib.ticker as plticker
 import scipy.stats as stats
-#%matplotlib inline
+# %matplotlib inline
 
 
 class HostStar(object):
@@ -276,18 +276,23 @@ for key, P in periods_to_add.items():
         planet.mass = np.mean(derived_params[f'mpsini{i+1}'])
         planet.masserr = np.std(derived_params[f'mpsini{i+1}'])
 
-#plot mass difference
+# plot mass difference
 
 fig, ax = plt.subplots()
 colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
 markers = ["o","^","v","s","*"]
 markers_iter = iter(markers)
+transform = [0,-0.1,-0.05,0.05,0.1]
+transform_iter = iter(transform)
 a = []
 default_mass = sys_varieties['default'].planets
 for i,j in enumerate(default_mass):
     a.append(j.mass)
 a.append(0)
 
+
+
+from matplotlib.transforms import ScaledTranslation
 a_error = []
 default_error = sys_varieties['default'].planets
 for i,j in enumerate(default_error):
@@ -296,9 +301,15 @@ a_error.append(0)
 for key, system in sys_varieties.items():
     c = next(colours)
     m = next(markers_iter)
+    t = next(transform_iter)
     for i, pl in enumerate(system.planets):
+        ax.set_xscale('log')
         scatter = ax.errorbar(pl.period, pl.mass-a[i], yerr=np.sqrt((pl.masserr)**2 + (a_error[i])**2), fmt='o', c=c,
-                                label=key if i == 0 else "", ecolor='lightgray', ms=6, marker=m, alpha=0.7)
+                                label=key if i == 0 else "", ecolor=c, capsize = 6, ms=6, marker=m, alpha=0.7, transform=ax.transData + ScaledTranslation(t,0,fig.dpi_scale_trans))
+xpos = [4.31, 5.9, 18.7, 37.9, 93.8]
+for i in xpos:
+    ax.set_xscale('log')
+    ax.axvspan(i-1,i+1,facecolor = 'lightgray', alpha = 0.2)
 ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=-5, ymax=5, linestyle='--', alpha=0.5)
 ax.set_xlabel('Orbital Period (d)', fontsize=16)
 ax.set_ylabel('Change in Planet Mass ($M_\oplus$)', fontsize=16)
@@ -307,18 +318,17 @@ ax.tick_params(axis='y', labelsize=16)
 ax.xaxis.set_tick_params(size=10)
 ax.yaxis.set_tick_params(size=2)
 ax.set_xscale('log')
-ax.set_xlim(3, 100)
-ax.set_ylim(-5, 5)
+ax.set_xlim(4, 115)
+ax.set_ylim(-5, 6)
 ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
 ax.set_xticks([3, 5, 10, 30, 50, 100])
-ax.legend(loc='upper left', fontsize=14)
+ax.legend(bbox_to_anchor=(1,0.5),loc='upper left', fontsize=14)
 plt.tight_layout()
 plt.savefig(f"{sys.name}_default/Mass_comp3_{sys_varieties['default'].name}.png", dpi=300)
 
-    
-   
+
 
 # Use multiprocessing to run several systems at once
-#pool = Pool(processes=4)
-#pool.map(eval_missing_planets, data)
-#del pool
+# pool = Pool(processes=4)
+# pool.map(eval_missing_planets, data)
+# del pool

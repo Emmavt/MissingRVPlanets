@@ -52,8 +52,8 @@ params['w5'] = radvel.Parameter(value = 0)
 params['k5'] = radvel.Parameter(value = 3)
 
 params['per6'] = radvel.Parameter(value = 10.493)
-params['tc6'] = radvel.Parameter(value = 2457117.8975051236)
-params['e6'] = radvel.Parameter(value = 0, vary=True)
+params['tc6'] = radvel.Parameter(value = 2459237.7244172776)
+params['e6'] = radvel.Parameter(value = 0.04737458984817271, vary=True)
 params['w6'] = radvel.Parameter(value = 0)
 params['k6'] = radvel.Parameter(value = 4.103414439622476)
 
@@ -69,33 +69,33 @@ time_base = 2458989.783463
 mod = radvel.RVModel(params, time_base=time_base)
 mod.params['per1'].vary = False
 mod.params['tc1'].vary = False
-mod.params['secosw1'].vary = False
-mod.params['sesinw1'].vary = False
+mod.params['secosw1'].vary = True
+mod.params['sesinw1'].vary = True
 
 mod.params['per2'].vary = False
 mod.params['tc2'].vary = False
-mod.params['secosw2'].vary = False
-mod.params['sesinw2'].vary = False
+mod.params['secosw2'].vary = True
+mod.params['sesinw2'].vary = True
 
 mod.params['per3'].vary = False
 mod.params['tc3'].vary = False
-mod.params['secosw3'].vary = False
-mod.params['sesinw3'].vary = False
+mod.params['secosw3'].vary = True
+mod.params['sesinw3'].vary = True
 
 mod.params['per4'].vary = False
 mod.params['tc4'].vary = False
-mod.params['secosw4'].vary = False
-mod.params['sesinw4'].vary = False
+mod.params['secosw4'].vary = True
+mod.params['sesinw4'].vary = True
 
 mod.params['per5'].vary = False
 mod.params['tc5'].vary = False
-mod.params['secosw5'].vary = False
-mod.params['sesinw5'].vary = False
+mod.params['secosw5'].vary = True
+mod.params['sesinw5'].vary = True
 
 mod.params['per6'].vary = False
 mod.params['tc6'].vary = False
-mod.params['secosw6'].vary = False
-mod.params['sesinw6'].vary = False
+mod.params['secosw6'].vary = True
+mod.params['sesinw6'].vary = True
 
 mod.params['dvdt'].vary = True
 mod.params['curv'].vary = False
@@ -111,6 +111,7 @@ priors += [radvel.prior.Gaussian('per4', 37.92, 0.0001)]
 priors += [radvel.prior.Gaussian('tc4', 2457000.7134, 0.0089)]
 priors += [radvel.prior.Gaussian('per5', 93.8, 0.0001)]
 priors += [radvel.prior.Gaussian('tc5', 2459462.9, 0.0089)]
+priors += [radvel.prior.EccentricityPrior(6, upperlims=[0.23286775594201736, 0.4679066596743713, 0.6043697301744824, 0.8290391709080689, 0.98, 0.4678262303587475])]
 for telescope in telescopes:
 	priors += [radvel.prior.HardBounds(f'jit_{telescope}', -20.0, 20.0)]
 
