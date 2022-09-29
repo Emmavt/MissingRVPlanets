@@ -236,7 +236,11 @@ pl3 = Planet('d', 18.66, 2458688.9653, 3, 0, 0, 0.00005, 0.009, 5.3, 1.7, 3.51, 
 pl4 = Planet('e', 37.92, 2457000.7134, 3, 0, 0, 0.0001, 0.0089, 14.8, 2.3, 3.78, 0.16)
 pl5 = Planet('f', 93.8, 2459462.9, 3, 0, 0, 0.0001, 0.0089, 26.6, 3.8, 0, 0,)
 sys = System('TOI-1246', 5, star, [pl1, pl2, pl3, pl4, pl5])
-
+#star = HostStar(0.81, 0.03, 0.832, 0.02, 5326, 64)
+#pl1 = Planet('b', 0.45, 2458517.4973, 3, 0, 0, 0.000032, 0.0018, 3.2, 0.8, 1.45, 0.11)
+#pl2 = Planet('c', 10.78, 2458527.05825, 3, 0, 0, 0.00015, 0.00053, 7.0, 2.3, 2.90, 0.13)
+#pl3 = Planet('d', 16.29, 2458521.8828, 3, 0, 0, 0.00005, 0.0035, 3.0, 2.4, 2.32, 0.16)
+#sys = System('TOI-561', 3, star, [pl1, pl2, pl3])
 
 # Calculate periods where additional planets may likely hide based on Kepler multi-planet statistics
 periods_to_add = log_space_periods(sys)
@@ -281,6 +285,7 @@ for key, P in periods_to_add.items():
 fig, ax = plt.subplots()
 colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
 markers = ["o","^","v","s","*"]
+#markers = ["o","^","v"]
 markers_iter = iter(markers)
 transform = [0,-0.1,-0.05,0.05,0.1]
 transform_iter = iter(transform)
@@ -299,18 +304,17 @@ for i,j in enumerate(default_error):
     a_error.append(j.masserr)
 a_error.append(0)
 for key, system in sys_varieties.items():
-    c = next(colours)
-    m = next(markers_iter)
-    t = next(transform_iter)
-    for i, pl in enumerate(system.planets):
-        ax.set_xscale('log')
-        scatter = ax.errorbar(pl.period, pl.mass-a[i], yerr=np.sqrt((pl.masserr)**2 + (a_error[i])**2), fmt='o', c=c,
-                                label=key if i == 0 else "", ecolor=c, capsize = 6, ms=6, marker=m, alpha=0.7, transform=ax.transData + ScaledTranslation(t,0,fig.dpi_scale_trans))
+    if key == 'default' or key == 'add_bc':
+        c = next(colours)
+        m = next(markers_iter)
+        t = next(transform_iter)
+        for i, pl in enumerate(system.planets):
+            ax.set_xscale('log')
+            scatter = ax.errorbar(pl.period, pl.mass-a[i], yerr=np.sqrt((pl.masserr)**2 + (a_error[i])**2), fmt='o', c=c, label=key if i == 0 else "", ecolor=c, capsize = 6, ms=6, marker=m, alpha=0.7, transform=ax.transData + ScaledTranslation(t,0,fig.dpi_scale_trans))
 xpos = [4.31, 5.9, 18.7, 37.9, 93.8]
 for i in xpos:
     ax.set_xscale('log')
-    ax.axvspan(i-1,i+1,facecolor = 'lightgray', alpha = 0.2)
-ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=-5, ymax=5, linestyle='--', alpha=0.5)
+ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=-10, ymax=10, linestyle='--', alpha=0.5)
 ax.set_xlabel('Orbital Period (d)', fontsize=16)
 ax.set_ylabel('Change in Planet Mass ($M_\oplus$)', fontsize=16)
 ax.tick_params(axis='x', labelsize=16)
@@ -318,14 +322,87 @@ ax.tick_params(axis='y', labelsize=16)
 ax.xaxis.set_tick_params(size=10)
 ax.yaxis.set_tick_params(size=2)
 ax.set_xscale('log')
-ax.set_xlim(4, 115)
-ax.set_ylim(-5, 6)
+ax.set_xlim(3, 120)
+ax.set_ylim(-6, 10)
 ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
-ax.set_xticks([3, 5, 10, 30, 50, 100])
+ax.set_xticks([3, 5, 10, 30])
 ax.legend(bbox_to_anchor=(1,0.5),loc='upper left', fontsize=14)
 plt.tight_layout()
 plt.savefig(f"{sys.name}_default/Mass_comp3_{sys_varieties['default'].name}.png", dpi=300)
 
+#plotting std dev of mass difference
+#fig, ax = plt.subplots()
+#default = sys_varieties['default'].planets
+#xpos = [4.31, 5.9, 18.7, 37.9, 93.8]
+#default_mass = []
+#for i,j in enumerate(default):
+    #default_mass.append(j.mass)
+#default_merr = []
+#for i,j in enumerate(default):
+    #default_merr.append(j.masserr)
+
+#add_bc = sys_varieties['add_bc'].planets
+#bc_mass = []
+#for i,j in enumerate(add_bc):
+    #bc_mass.append(j.mass)
+#bc_merr = []
+#for i,j in enumerate(add_bc):
+    #bc_merr.append(j.masserr**2)
+
+#add_cd = sys_varieties['add_cd'].planets
+#cd_mass = []
+#for i,j in enumerate(add_cd):
+    #cd_mass.append(j.mass)
+#cd_merr = []
+#for i,j in enumerate(add_cd):
+    #cd_merr.append(j.masserr**2)
+
+#add_de = sys_varieties['add_de'].planets
+#de_mass = []
+#for i,j in enumerate(add_de):
+    #de_mass.append(j.mass)
+#de_merr = []
+#for i,j in enumerate(add_de):
+    #de_merr.append(j.masserr**2)
+
+#add_ef = sys_varieties['add_ef'].planets
+#ef_mass = []
+#for i,j in enumerate(add_ef):
+    #ef_mass.append(j.mass)
+#ef_merr = []
+#for i,j in enumerate(add_ef):
+    #ef_merr.append(j.masserr**2)
+#mass_diff = [[],[],[],[],[]]
+#stderr_list = [[],[],[],[],[]]
+#for i in range(5):
+    #mass_diff[i].append(abs(bc_mass[i]-default_mass[i]))
+    #stderr_list[i].append(bc_merr[i])
+    #mass_diff[i].append(abs(cd_mass[i]-default_mass[i]))
+    #stderr_list[i].append(cd_merr[i])
+    #mass_diff[i].append(abs(de_mass[i]-default_mass[i]))
+    #stderr_list[i].append(de_merr[i])
+    #mass_diff[i].append(abs(ef_mass[i]-default_mass[i]))
+    #stderr_list[i].append(ef_merr[i])
+
+#stdevs = []
+#stdevs_err = []
+#for i in range(5):
+    #stdevs.append(np.sum(mass_diff[i])/np.sqrt(5))
+    #stdevs_err.append(np.sqrt(np.sum(stderr_list[i]))/np.sqrt(5))
+#dev_plot = ax.errorbar(xpos, stdevs, yerr = stdevs_err, ecolor = 'lightgray',capsize = 6, marker = 'o')
+#for i in xpos:
+    #ax.set_xscale('log')
+#ax.set_xlabel('Orbital Period (days)', fontsize=16)
+#ax.set_ylabel('Std. Dev. of Mass Difference ($M_\oplus$)', fontsize = 16)
+#ax.tick_params(axis='x', labelsize=16)
+#ax.tick_params(axis='y', labelsize=16)
+#ax.xaxis.set_tick_params(size=10)
+#ax.yaxis.set_tick_params(size=2)
+#ax.set_xscale('log')
+#ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
+#ax.set_xticks([3, 5, 10, 30, 50, 100])
+#plt.tight_layout()
+#plt.savefig(f"{sys.name}_default/Mass_comp4_{sys_varieties['default'].name}.png", dpi=300)
 
 
 # Use multiprocessing to run several systems at once

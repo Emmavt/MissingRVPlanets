@@ -142,13 +142,13 @@ class System:
                     eccs.append(0.99)
                 else:
                     eccs.append(rat-1)
-            eccs.append(0.98)
-            eccs1 = []
-            for i in pers:
-                a = pers1.index(i)
-                eccs1.append(eccs[a])
+           # eccs.append(0.98)
+           # eccs1 = []
+            #for i in pers:
+                #a = pers1.index(i)
+                #eccs1.append(eccs[a])
             num = len(eccs)
-            return [num,eccs1]
+            return [num,eccs]
         list_imports = ['import numpy as np', 'import radvel',
                         'import pandas as pd', 'import string', 'from matplotlib import rcParams']
         with open(setup_file, 'w') as file:
@@ -174,7 +174,7 @@ class System:
             # For each planet, initialize a period, time of inferior conjuction, eccentricity, argument of periastron, and RV semi-ampltiude using the values read in to the script
             for i, planet in enumerate(self.planets):
                 i += 1
-                file.write(f"params['per{i}'] = radvel.Parameter(value = {planet.period})\n")
+                file.write(f"params['per{i}'] = radvel.Parameter(value = {planet.period}, vary=True)\n")
                 file.write(f"params['tc{i}'] = radvel.Parameter(value = {planet.t0})\n")
                 # For simplicity, and motivated by Yee et al. 2021, set eccentricities to 0
                 file.write(f"params['e{i}'] = radvel.Parameter(value = {planet.ecc}, vary=True)\n")
@@ -208,12 +208,12 @@ class System:
             # Set a prior to keep K > 0 - this can be inappropriate as it biases larger values of K
             file.write(f"priors = [radvel.prior.PositiveKPrior({self.num_planets})]\n")
             # Set priors on the planet parameters based on prior knowledge of uncertainties
-            for i, planet in enumerate(self.planets):
-                i += 1
+            #for i, planet in enumerate(self.planets):
+                #i += 1
                 # Do not set a prior on period and t0 if there is no associated error as this breaks the fit
-                if planet.perioderr != 0 and planet.t0err != 0:
-                    file.write(
-                        f"priors += [radvel.prior.Gaussian('per{i}', {planet.period}, {planet.perioderr})]\npriors += [radvel.prior.Gaussian('tc{i}', {planet.t0}, {planet.t0err})]\n")
+                #if planet.perioderr != 0 and planet.t0err != 0:
+                    #file.write(
+                        #f"priors += [radvel.prior.Gaussian('per{i}', {planet.period}, {planet.perioderr})]\npriors += [radvel.prior.Gaussian('tc{i}', {planet.t0}, {planet.t0err})]\n")
             file.write(f"priors += [radvel.prior.EccentricityPrior({ecc_helper(self)[0]}, upperlims={ecc_helper(self)[1]})]\n")
             # Set a hard bound prior on instrumental parameters to speed up the fit
             file.write(f"for telescope in telescopes:\n")
@@ -249,122 +249,120 @@ def eval_missing_planets(row):
     #sys = System(row['name'], num_planets, star, planets)
 
     # Create system object with host star and planets for the 'default' scenario
-    star = HostStar(0.86, 0.12, 0.87, 0.1, 5151, 100)
-    pl1 = Planet('b', 4.31, 2458686.5658, 3, 0, 0, 0.00002, 0.001, 8.1, 1.1, 3.01, 0.06)
-    pl2 = Planet('c', 5.90, 2458683.4661, 3, 0, 0, 0.00008, 0.003, 8.8, 1.2, 2.51, 0.08)
-    pl3 = Planet('d', 18.66, 2458688.9653, 3, 0, 0, 0.00005, 0.009, 5.3, 1.7, 3.51, 0.09)
-    pl4 = Planet('e', 37.92, 2457000.7134, 3, 0, 0, 0.0001, 0.0089, 14.8, 2.3, 3.78, 0.16)
-    pl5 = Planet('f', 93.8, 2459462.9, 3, 0, 0, 0.0001, 0.0089, 26.6, 3.8, 0, 0,)
-    sys = System('TOI-1246', 5, star, [pl1, pl2, pl3, pl4, pl5])
-
+    #name, period, t0, K,ecc,omega,Perr,t0err, mass, masserr, radius, radiuserr
+    #star = HostStar(0.86, 0.12, 0.87, 0.1, 5151, 100)
+    #pl1 = Planet('b', 4.31, 2458686.5658, 3, 0, 0, 0.00002, 0.001, 8.1, 1.1, 3.01, 0.06)
+    #pl2 = Planet('c', 5.90, 2458683.4661, 3, 0, 0, 0.00008, 0.003, 8.8, 1.2, 2.51, 0.08)
+    #pl3 = Planet('d', 18.66, 2458688.9653, 3, 0, 0, 0.00005, 0.009, 5.3, 1.7, 3.51, 0.09)
+    #pl4 = Planet('e', 37.92, 2457000.7134, 3, 0, 0, 0.0001, 0.0089, 14.8, 2.3, 3.78, 0.16)
+    #pl5 = Planet('f', 93.8, 2459462.9, 3, 0, 0, 0.0001, 0.0089, 26.6, 3.8, 0, 0,)
+    #sys = System('TOI-1246', 5, star, [pl1, pl2, pl3, pl4, pl5])
+    #new system
+    #mass, masserr, radius, radiuserr, teff, tefferr
+    #name, period, t0, K,ecc,omega,Perr,t0err, mass, masserr, radius, radiuserr
+    #star = HostStar(0.81, 0.03, 0.832, 0.02, 5326, 64)
+    #pl1 = Planet('b', 0.45, 2458517.4973, 3, 0, 0, 0.000032, 0.0018, 3.2, 0.8, 1.45, 0.11)
+    #pl2 = Planet('c', 10.78, 2458527.05825, 3, 0, 0, 0.00015, 0.00053, 7.0, 2.3, 2.90, 0.13)
+    #pl3 = Planet('d', 16.29, 2458521.8828, 3, 0, 0, 0.00005, 0.0035, 3.0, 2.4, 2.32, 0.16)
+    #pl4 = Planet('e', 77.23, 2457000.7134, 3, 0, 0, 0.0001, 0.0089, 14.8, 2.3, 3.78, 0.16)
+    #pl5 = Planet('f', 93.8, 2459462.9, 3, 0, 0, 0.0001, 0.0089, 26.6, 3.8, 0, 0,)
+    #sys = System('TOI-561', 3, star, [pl1, pl2, pl3])
     # Generate the setup file for the default system
     ##changed setup file to TestData/
+    #sys.make_setup_file(f'TestData/{sys.name}_st.csv', f"{sys.name}_default.py")
+
+    #name, period, t0, K,ecc,omega,Perr,t0err, mass, masserr, radius, radiuserr
+    star = HostStar(1.152, 0.169, 1.268, 0.055, 6114, 122.03)
+    pl1 = Planet('b', 37.468, 2458967.95, 5, 0, 0, 0.00037, 0.00457, 9, 2, 2.752, 0.342)
+    pl2 = Planet('c', 400, 2458967.95, 5, 0, 0, 0.0004, 0.005, 12, 3, 5, 0.2)
+    sys = System('TOI-1751', 2, star, [pl1, pl2])
     sys.make_setup_file(f'TestData/{sys.name}_st.csv', f"{sys.name}_default.py")
     # Run a Radvel fit on the default system setup file
     subprocess.run(["TestData/radvel_bash.sh", f"{sys.name}_default.py", "nplanets"])
 
     # Calculate periods where additional planets may likely hide based on Kepler multi-planet statistics
-    periods_to_add = log_space_periods(sys)
+    ##periods_to_add = log_space_periods(sys)
     # Dictionary to keep track of different system variations
-    sys_varieties = {'default': sys}
-    for key, P in periods_to_add.items():
-        t0s = np.array([pl.t0 for pl in sys.planets])
-        masses = np.array([pl.mass for pl in sys.planets])
+    ##sys_varieties = {'default': sys}
+    ##for key, P in periods_to_add.items():
+        ##t0s = np.array([pl.t0 for pl in sys.planets])
+        ##masses = np.array([pl.mass for pl in sys.planets])
         # Pick a random t0 within the range set by the other planets in the system for the new planet
-        t0_add = np.random.uniform(t0s.min(), t0s.max())
+        ##t0_add = np.random.uniform(t0s.min(), t0s.max())
         # Use the mean of the other planets in the system as the initial mass of the additional planet (Millholland et al. 2017)
-        M_add = np.mean(masses)
+        ##M_add = np.mean(masses)
         # Calculate the associated semi-amplitude of the new planet
-        K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
+        ##K_add = calc_semi_ampltiude(P, M_add, sys.star.mass, 0)
 #add
         #ecc_add = pick random between 0 and 1? start with 0?
-        def ecc():
-            eccs = np.random.rayleigh(0.0355, 1)
-            while eccs != 0:
-                return eccs[0]
-        ecc_add = ecc()
-        planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add, ecc = ecc_add)
+        ##def ecc():
+            ##eccs = np.random.rayleigh(0.0355, 1)
+            ##while eccs != 0:
+                ##return eccs[0]
+        ##ecc_add = ecc()
+        ##planet_to_add = Planet(key, P, t0_add, K_add, mass=M_add, ecc = ecc_add)
         # Make a copy of the default system to add the new planet to
-        sys_add_pl = copy.deepcopy(sys)
-        sys_add_pl.name = sys.name+'_'+key  # Rename new system variation
-        sys_add_pl.planets += [planet_to_add]  # Add new planet
-        sys_add_pl.num_planets += 1
-        sys_varieties[key] = sys_add_pl  # Store new system variation
+        ##sys_add_pl = copy.deepcopy(sys)
+        ##sys_add_pl.name = sys.name+'_'+key  # Rename new system variation
+        ##sys_add_pl.planets += [planet_to_add]  # Add new planet
+        ##sys_add_pl.num_planets += 1
+        ##sys_varieties[key] = sys_add_pl  # Store new system variation
 
         # Pickle system object to save it for reproducability
-        sys_add_pl.__module__ = __name__  # Needed to pickle a dataclass
-        with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
-            pickle.dump(sys_add_pl, pickle_file)
+        ##sys_add_pl.__module__ = __name__  # Needed to pickle a dataclass
+        ##with open(f'pickle_{sys_add_pl.name}', 'wb') as pickle_file:
+            ##pickle.dump(sys_add_pl, pickle_file)
 
         # Create Radvel setup file
-        setup_file_name = f'{sys.name}_default/{sys_add_pl.name}.py' 
-        sys_add_pl.make_setup_file('TestData/TOI-1246_st.csv', setup_file_name)
+        ##setup_file_name = f'{sys.name}_default/{sys_add_pl.name}.py' 
+        ##sys_add_pl.make_setup_file('TestData/TOI-1246_st.csv', setup_file_name)
         # Run radvel fit
-        subprocess.run(["TestData/radvel_bash.sh", setup_file_name, "nplanets"])
+        ##subprocess.run(["TestData/radvel_bash.sh", setup_file_name, "nplanets"])
 
         # Read in results from radvel fit
-        derived_params = pd.read_csv(
-            f'{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
+        ##derived_params = pd.read_csv(
+            ##f'{sys_add_pl.name}/{sys_add_pl.name}_derived.csv.bz2', index_col=0)
         # Create dictionary mapping planet letters to numbers
-        planet_letters = dict(zip([int(i) for i in np.arange(
-            sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
+        ##planet_letters = dict(zip([int(i) for i in np.arange(
+            ##sys_add_pl.num_planets)+1], [pl.letter for pl in sys_add_pl.planets]))
         # Calculate and update planet masses and associated errors from the fit
-        for i, planet in enumerate(sys_add_pl.planets):
-            planet.mass = np.mean(derived_params[f'mpsini{i+1}'])
-            planet.masserr = np.std(derived_params[f'mpsini{i+1}'])
+        ##for i, planet in enumerate(sys_add_pl.planets):
+            ##planet.mass = np.mean(derived_params[f'mpsini{i+1}'])
+            ##planet.masserr = np.std(derived_params[f'mpsini{i+1}'])
 
     # Create a figure comparing the results from different system variations
-    fig, ax = plt.subplots()
-    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
-    for key, system in sys_varieties.items():
-        c = next(colours)
-        for i, pl in enumerate(system.planets):
-            scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
-                                  label=key if i == 0 else "", ecolor='lightgray', ms=5)
-    ax.vlines(x=[4.31, 5.9, 18.7, 37.9, 93.8], ymin=0, ymax=40, linestyle='--', alpha=0.5)
-    ax.set_xlabel('Orbital Period (d)', fontsize=16)
-    ax.set_ylabel('Planet Mass ($M_\oplus$)', fontsize=16)
-    ax.tick_params(axis='x', labelsize=16)
-    ax.tick_params(axis='y', labelsize=16)
-    ax.xaxis.set_tick_params(size=10)
-    ax.yaxis.set_tick_params(size=10)
-    ax.set_xscale('log')
-    ax.set_xlim(3, 100)
-    ax.set_ylim(-1, 35)
-    ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
-    ax.set_xticks([3, 5, 10, 30, 50, 100])
-    ax.legend(loc='upper left', fontsize=14)
-    plt.tight_layout()
-    plt.savefig(f"{sys.name}_default/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
+    ##fig, ax = plt.subplots()
+    ##colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
+    ##for key, system in sys_varieties.items():
+        ##c = next(colours)
+        ##for i, pl in enumerate(system.planets):
+            ##scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
+                                  ##label=key if i == 0 else "", ecolor='lightgray', ms=5)
+    ##ax.vlines(x=[0.45, 10.78, 16.29], ymin=0, ymax=40, linestyle='--', alpha=0.5)
+    ##ax.set_xlabel('Orbital Period (d)', fontsize=16)
+    ##ax.set_ylabel('Planet Mass ($M_\oplus$)', fontsize=16)
+    ##ax.tick_params(axis='x', labelsize=16)
+    ##ax.tick_params(axis='y', labelsize=16)
+    ##ax.xaxis.set_tick_params(size=10)
+    ##ax.yaxis.set_tick_params(size=10)
+    ##ax.set_xscale('log')
+    ##ax.set_xlim(3, 100)
+    ##ax.set_ylim(-1, 35)
+    ##ax.xaxis.set_major_formatter(plticker.ScalarFormatter())
+    ##ax.set_xticks([3, 5, 10, 30, 50, 100])
+    ##ax.legend(loc='upper left', fontsize=14)
+    ##plt.tight_layout()
+    ##plt.savefig(f"{sys.name}_default/Mass_comp_{sys_varieties['default'].name}.png", dpi=300)
 
-    fig, ax = plt.subplots()
-    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
-    for key, system in sys_varieties.items():
-        c = next(colours)
-        linestyles = ['-', '--', 'dotted', 'dashdot', (0, (5, 10)), (0, (3, 1, 1, 1, 1, 1))]
-        for i, pl in enumerate(system.planets):
-            x = np.linspace(pl.mass - 3*pl.masserr, pl.mass + 3*pl.masserr, 100)
-            y = stats.norm.pdf(x, pl.mass, pl.masserr)
-            ax.plot(x, y, c=c, ls=linestyles[i], label=key if i == 0 else "")
-            ax.plot(x, y, c=c, ls=linestyles[i], label=pl.letter if key == 'default' else "")
-    ax.set_xlabel('Planet Mass ($M_\oplus$)', fontsize=16)
-    ax.tick_params(axis='x', labelsize=16)
-    ax.tick_params(axis='y', labelsize=16)
-    ax.xaxis.set_tick_params(size=10)
-    ax.yaxis.set_tick_params(size=10)
-    ax.set_xlim(-5, 45)
-    ax.set_ylim(-0.05, 1.6)
-    ax.legend()
-    plt.tight_layout()
-    plt.savefig(f"{sys.name}_default/Mass_comp2_{sys_varieties['default'].name}.png", dpi=300)
+   
 #plotting mass difference
-    fig, ax = plt.subplots()
-    colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
-    for key, system in sys_varieties.items():
-        c = next(colours)
-        for i, pl in enumerate(system.planets):
-            scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
-                                  label=key if i == 0 else "", ecolor='lightgray', ms=5)
+    #fig, ax = plt.subplots()
+    #colours = iter(cm.viridis(np.linspace(0, 1, len(sys_varieties.keys()))))
+    #for key, system in sys_varieties.items():
+        #c = next(colours)
+        #for i, pl in enumerate(system.planets):
+            #scatter = ax.errorbar(pl.period, pl.mass, yerr=pl.masserr, fmt='o', c=c,
+                                  #label=key if i == 0 else "", ecolor='lightgray', ms=5)
     
     
 eval_missing_planets(1)

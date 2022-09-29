@@ -1,0 +1,7 @@
+[fit]
+run = True
+postfile = TOI-1751_add_bc/TOI-1751_add_bc_post_obj.pkl
+
+[plot]
+rv_plot = TOI-1751_add_bc/TOI-1751_add_bc_rv_multipanel.pdf
+
